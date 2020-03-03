@@ -74,6 +74,7 @@ class AbstractModelParser:
         self._layer_dict = {}
         self.parsed_model = None
 
+    @abstractmethod
     def parse(self):
         """Extract the essential information about a neural network.
 
