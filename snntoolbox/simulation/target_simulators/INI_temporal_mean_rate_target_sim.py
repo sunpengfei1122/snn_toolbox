@@ -115,9 +115,12 @@ class SNN(AbstractSNN):
 
         def remove_name_counter(name_in):
             splits = str(name_in).split('_')
+            print("splits:", splits)
             name_out = splits[0] + '_' + splits[1]
             if len(splits) == 3:
                 name_out += re.sub(r'\d+/', '/', splits[2])
+            if len(splits) == 4:   #pytorch depth_kenel
+                name_out += re.sub(r'\d+/', '/', splits[2]+splits[3])
             return name_out
 
         parameter_map = {remove_name_counter(p.name): v for p, v in
@@ -126,11 +129,15 @@ class SNN(AbstractSNN):
         count = 0
         for p in self.snn.weights:
             name = remove_name_counter(p.name)
+            print("name and p.name", p)
+            #print("parameter_map", parameter_map.keys())
             if name in parameter_map:
                 keras.backend.set_value(p, parameter_map[name])
                 count += 1
+        print("parameter_map", parameter_map.keys())
+
         assert count == len(parameter_map), "Not all weights have been " \
-                                            "transferred from ANN to SNN."
+                                             "transferred from ANN to SNN."
 
         for layer in self.snn.layers:
             if hasattr(layer, 'bias'):
